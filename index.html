@@ -8,6 +8,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Arkana Pancabhuta - Sistem Rune</title>
 
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -62,7 +65,6 @@
       position: relative;
     }
 
-    /* ════ LAYAR PEMBUKA (GATE) ════ */
     #gate-overlay {
       position: fixed; inset: 0; z-index: 10000;
       background: var(--obsidian);
@@ -78,7 +80,6 @@
     }
     .gate-btn:hover { background: rgba(201, 162, 39, 0.3); box-shadow: 0 0 40px rgba(201, 162, 39, 0.6); transform: scale(1.05); }
 
-    /* ════ BACKGROUND & GLASS PANEL ════ */
     #star-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
     .bg-hex-grid { position: fixed; inset: 0; background-image: radial-gradient(ellipse 80% 50% at 20% 10%, rgba(58, 143, 255, 0.07) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 80% 80%, rgba(201, 162, 39, 0.06) 0%, transparent 60%); pointer-events: none; z-index: 0; }
     
@@ -89,7 +90,6 @@
       position: relative; overflow: hidden;
     }
 
-    /* ════ HEADER & STATS ════ */
     .system-badge { font-family: 'Cinzel', serif; letter-spacing: 0.3em; font-size: 0.6rem; color: var(--gold-light); text-shadow: 0 0 12px var(--gold); border: 1px solid rgba(201, 162, 39, 0.3); padding: 2px 12px; display: inline-block; position: relative; }
     .player-name { font-family: 'Cinzel Decorative', serif; font-size: 1.4rem; color: var(--gold-bright); text-shadow: 0 0 10px var(--gold); }
     .rank-badge { background: linear-gradient(135deg, #1a0a2e, #2d1a4a); border: 1px solid rgba(168, 85, 247, 0.5); font-family: 'Cinzel', serif; font-size: 0.65rem; color: #d8b4fe; padding: 3px 10px; border-radius: 2px; }
@@ -97,12 +97,10 @@
     .level-number { font-family: 'Cinzel', serif; font-size: 1.4rem; font-weight: 900; color: var(--gold-bright); }
     .level-label { font-size: 0.45rem; color: rgba(201, 162, 39, 0.7); font-family: 'Cinzel', serif; }
     
-    /* ════ EXP BAR ════ */
     .exp-bar-container { height: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(201, 162, 39, 0.25); border-radius: 2px; position: relative; overflow: hidden; }
     .exp-bar-fill { height: 100%; background: linear-gradient(90deg, #b8860b, #daa520, #f0c040, #ffe066, #f0c040, #daa520, #c9a227); background-size: 200% 100%; animation: liquidGold 2s linear infinite; transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
     @keyframes liquidGold { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 
-    /* ════ ATTRIBUTE CARDS ════ */
     .attr-card { position: relative; background: rgba(10, 15, 28, 0.9); border-radius: 4px; padding: 14px 12px; transition: transform 0.3s ease; }
     .attr-str { border: 1px solid rgba(239, 68, 68, 0.4); box-shadow: 0 0 20px rgba(239, 68, 68, 0.15); }
     .attr-str .attr-value { color: #fca5a5; text-shadow: 0 0 12px #ef4444; }
@@ -115,7 +113,6 @@
     .attr-name { font-family: 'Cinzel', serif; font-size: 0.6rem; color: rgba(226, 232, 240, 0.5); }
     .attr-value { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 700; line-height: 1; }
 
-    /* ════ QUEST CARDS ════ */
     .quest-section-title { font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.3em; color: var(--gold); display: flex; align-items: center; gap: 10px; }
     .quest-card { position: relative; background: rgba(8, 12, 24, 0.85); border-radius: 4px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: all 0.4s ease; overflow: hidden; user-select: none; }
     .quest-water { border: 1px solid rgba(58, 143, 255, 0.25); } .quest-water .quest-seal { color: var(--water); }
@@ -132,14 +129,12 @@
     .quest-card.checked .quest-name { text-decoration: line-through; }
     .quest-exp { font-family: 'Cinzel', serif; font-size: 0.7rem; color: var(--gold); }
     
-    /* ════ MANDALA ENERGY CORE ════ */
     .mandala-container { position: relative; width: 140px; height: 140px; display: flex; justify-content: center; align-items: center; cursor: pointer; margin: 20px auto; }
     .mandala-ring { position: absolute; border-radius: 50%; box-shadow: 0 0 15px rgba(212, 175, 55, 0.5), inset 0 0 15px rgba(212, 175, 55, 0.5); pointer-events: none; }
     .outer-ring { width: 100%; height: 100%; border: 3px dashed #d4af37; animation: spinRight 15s linear infinite; }
     .inner-ring { width: 70%; height: 70%; border: 2px dotted #00ffff; animation: spinLeft 10s linear infinite; }
     .energy-text { position: relative; z-index: 2; font-family: 'Cinzel', serif; font-weight: bold; color: #fff; text-shadow: 0 0 8px #d4af37; font-size: 0.8rem; text-align: center; letter-spacing: 0.1em; pointer-events: none; }
     
-    /* Tombol Mati (Jika sudah klaim) */
     .mandala-container.disabled .outer-ring { border-color: #555; animation: none; box-shadow: none; }
     .mandala-container.disabled .inner-ring { border-color: #444; animation: none; box-shadow: none; }
     .mandala-container.disabled .energy-text { color: #777; text-shadow: none; }
@@ -149,14 +144,12 @@
     
     .mandala-container:active:not(.disabled) .outer-ring { box-shadow: 0 0 30px #00ffff, inset 0 0 30px #00ffff; }
 
-    /* ════ PARTICLE EMOJI SYSTEM ════ */
     .particle-emoji { position: fixed; pointer-events: none; z-index: 9997; font-size: 20px; animation: particleBurst 1s ease-out forwards; }
     @keyframes particleBurst {
       0% { transform: translate(0, 0) scale(0.5); opacity: 1; }
       100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--rot)); opacity: 0; }
     }
 
-    /* ════ PANEL BLESSING ════ */
     .blessing-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 9998; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
     .blessing-overlay.show { opacity: 1; pointer-events: all; }
     .blessing-panel { background: radial-gradient(circle at center, rgba(30, 20, 50, 0.9), #080c12); border: 2px solid var(--gold); border-radius: 8px; padding: 30px; text-align: center; width: 90%; max-width: 350px; box-shadow: 0 0 40px rgba(201, 162, 39, 0.5); transform: scale(0.8); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
@@ -168,7 +161,6 @@
     .btn-close-blessing { padding: 10px 20px; background: transparent; border: 1px solid var(--gold); color: var(--gold); font-family: 'Cinzel', serif; cursor: pointer; transition: 0.3s; width: 100%; }
     .btn-close-blessing:hover { background: var(--gold); color: #000; }
 
-    /* ════ TRACKING UI ════ */
     .history-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 10px; }
     .history-day { display: flex; flex-direction: column; align-items: center; gap: 4px; }
     .history-icon { width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgba(201, 162, 39, 0.2); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; background: rgba(0,0,0,0.3); transition: all 0.3s ease; }
@@ -177,7 +169,6 @@
     .history-icon.rest { border-color: #3b82f6; color: #3b82f6; opacity: 0.6; }
     .history-label { font-size: 0.5rem; font-family: 'Cinzel', serif; color: rgba(201, 162, 39, 0.5); }
 
-    /* Utilities */
     .system-init { animation: systemInit 1s cubic-bezier(0.4, 0, 0.2, 1) both; }
     @keyframes systemInit { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
   </style>
@@ -273,6 +264,11 @@
       </div>
     </div>
 
+    <button onclick="localStorage.removeItem('arkanaData'); location.reload();" 
+            style="display: block; margin: 20px auto; padding: 10px 20px; background: #ef4444; color: white; border-radius: 4px; font-family: 'Cinzel', serif;">
+      🔥 RESET PROGRES (UNTUK TESTING) 🔥
+    </button>
+
   </div>
 
   <script>
@@ -291,7 +287,6 @@
   const WORKOUT_DAYS = [0, 2, 4, 5]; 
   const DAY_NAMES = ['MIN', 'SEN', 'SEL', 'RAB', 'KAM', 'JUM', 'SAB'];
 
-  // ════ DATA QUEST ════
   const QUESTS = [
     { id: 0, name: 'Push-up / Knee Push-up', element: 'AIR', elementClass: 'quest-water', icon: '💧', color: '#3a8fff', sfx: 'sfx-water', detail: '3 × 15 reps' },
     { id: 1, name: 'Plank Hold', element: 'API', elementClass: 'quest-fire', icon: '🔥', color: '#ff6a1a', sfx: 'sfx-fire', detail: '3 × 45 sec' },
@@ -307,7 +302,6 @@
     return `${year}-${month}-${day}`;
   }
 
-  // ════ INISIALISASI APLIKASI ════
   function init() {
     loadData();
     generateHistory(); 
@@ -316,7 +310,6 @@
     checkDailyLimit();
   }
 
-  // ════ GERBANG MASUK ════
   function openGate() {
     document.getElementById('gate-overlay').style.opacity = '0';
     setTimeout(() => { document.getElementById('gate-overlay').style.display = 'none'; }, 1000);
@@ -325,7 +318,6 @@
     audio.play().catch(e => console.log("Audio block:", e));
   }
 
-  // ════ GENERATE HISTORY UI ════
   function generateHistory() {
     const grid = document.getElementById('history-grid');
     grid.innerHTML = '';
@@ -361,7 +353,6 @@
     }
   }
 
-  // ════ RENDER QUESTS ════
   function renderQuests() {
     const list = document.getElementById('quest-list');
     list.innerHTML = '';
@@ -384,7 +375,6 @@
     });
   }
 
-  // ════ LOGIKA KLIK QUEST ════
   function toggleQuest(quest, cardElement, event) {
     if (STATE.lastClaimDate === new Date().toDateString()) return;
 
@@ -404,7 +394,6 @@
     document.getElementById('pending-exp').textContent = STATE.checkedQuests.length * EXP_PER_QUEST;
   }
 
-  // ════ PARTIKEL EMOJI ════
   function spawnEmojiParticles(event, emoji) {
     const count = 8; 
     const x = event.clientX || window.innerWidth / 2;
@@ -429,7 +418,6 @@
     }
   }
 
-  // ════ KLAIM ENERGI & SYSTEM TTS ════
   function claimEnergy(event) {
     const today = new Date();
     const todayStr = today.toDateString();
@@ -472,7 +460,6 @@
     checkDailyLimit();
     generateHistory(); 
 
-    // ════ TEXT-TO-SPEECH (TTS) SYSTEM ANNNOUNCER ════
     if ('speechSynthesis' in window) {
       let ttsText = "YOU GAINED XP AND INCREASE STAT UP";
       if (isLevelUp) {
@@ -481,19 +468,18 @@
       
       const utterance = new SpeechSynthesisUtterance(ttsText);
       utterance.lang = 'en-US'; 
-      utterance.pitch = 0.8; // Sedikit direndahkan agar lebih maskulin/berat
-      utterance.rate = 0.95; // Kecepatan sedikit melambat agar terasa epik
+      utterance.pitch = 0.8; 
+      utterance.rate = 0.95; 
       
       const playMaleTTS = () => {
         const voices = window.speechSynthesis.getVoices();
-        // Mencari suara laki-laki (Male/David/James dll) berbahasa Inggris
         const maleVoice = voices.find(v => 
           v.lang.startsWith('en') && 
           (v.name.toLowerCase().includes('male') || 
            v.name.toLowerCase().includes('david') || 
            v.name.toLowerCase().includes('james') ||
            v.name.toLowerCase().includes('mark'))
-        ) || voices.find(v => v.lang.startsWith('en-US') || v.lang.startsWith('en-GB')); // Fallback jika tidak ada label 'Male'
+        ) || voices.find(v => v.lang.startsWith('en-US') || v.lang.startsWith('en-GB'));
         
         if (maleVoice) utterance.voice = maleVoice;
         window.speechSynthesis.speak(utterance);
@@ -509,7 +495,6 @@
     tampilkanBlessing(expGain, strGain, agiGain, endGain, vitGain, isLevelUp);
   }
 
-  // ════ PANEL BLESSING ════
   function tampilkanBlessing(exp, str, agi, end, vit, isLevelUp) {
     const list = document.getElementById('blessing-list');
     document.getElementById('blessing-title').textContent = isLevelUp ? "LEVEL UP! BLESSING" : "BLESSING ACQUIRED";
@@ -528,7 +513,6 @@
     document.getElementById('blessing-overlay').classList.remove('show');
   }
 
-  // ════ SISTEM BATAS HARIAN ════
   function checkDailyLimit() {
     const btn = document.getElementById('claim-btn');
     const text = document.getElementById('claim-text');
@@ -548,7 +532,6 @@
     }
   }
 
-  // ════ UPDATE UI & STORAGE ════
   function updateUI() {
     document.getElementById('level-display').textContent = STATE.level;
     document.getElementById('quests-done').textContent = STATE.questsDone;
@@ -589,13 +572,16 @@
     setInterval(draw, 1000);
   })();
 
-  // Jalankan Sistem
+  // ════ DAFTARKAN SERVICE WORKER (AGAR BISA OFFLINE & INSTAL) ════
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('SW Registered!', reg.scope))
+        .catch(err => console.error('SW Failed!', err));
+    });
+  }
+
   init();
   </script>
 </body>
-    <button onclick="localStorage.removeItem('arkanaData'); location.reload();" 
-          style="display: block; margin: 20px auto; padding: 10px 20px; background: #ef4444; color: white; border-radius: 4px; font-family: 'Cinzel', serif;">
-    🔥 RESET PROGRES (UNTUK TESTING) 🔥
-  </button>
-
 </html>
