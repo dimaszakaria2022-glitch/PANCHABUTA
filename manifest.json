@@ -1,0 +1,43 @@
+{
+  "name": "Arkana Pancabhuta - Sistem Rune",
+  "short_name": "Arkana",
+  "description": "Sistem kultivasi rahasia berbasis elemen alam. Selesaikan quest, himpun energi, dan tingkatkan atribut di dunia nyata.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#080c12",
+  "background_color": "#080c12",
+  "lang": "id",
+  "dir": "ltr",
+  "categories": ["fitness", "health", "games", "lifestyle"],
+  "icons": [
+    {
+      "src": "icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Quest Harian",
+      "short_name": "Quest",
+      "description": "Lihat gulungan quest hari ini",
+      "url": "./index.html",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}

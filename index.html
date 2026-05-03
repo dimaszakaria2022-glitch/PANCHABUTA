@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#080c12" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Arkana Pancabhuta - Sistem Rune</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            obsidian: '#080c12',
+            gold: '#c9a227',
+            'gold-light': '#f0c040',
+            'gold-bright': '#ffe066',
+            'mystic-blue': '#3a8fff',
+            'mystic-glow': '#00d4ff',
+          },
+          fontFamily: {
+            cinzel: ['Cinzel', 'serif'],
+            'cinzel-dec': ['Cinzel Decorative', 'serif'],
+            exo: ['Exo 2', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --gold: #c9a227;
+      --gold-light: #f0c040;
+      --gold-bright: #ffe066;
+      --mystic-blue: #3a8fff;
+      --obsidian: #080c12;
+
+      /* Element Colors */
+      --water: #3a8fff; --water-glow: rgba(58, 143, 255, 0.6);
+      --fire: #ff6a1a; --fire-glow: rgba(255, 106, 26, 0.6);
+      --lightning: #a855f7; --lightning-glow: rgba(168, 85, 247, 0.6);
+      --earth: #b5892a; --earth-glow: rgba(181, 137, 42, 0.6);
+      --wind: #4ade80; --wind-glow: rgba(74, 222, 128, 0.6);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: var(--obsidian);
+      font-family: 'Exo 2', sans-serif;
+      color: #e2e8f0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ════ LAYAR PEMBUKA (GATE) ════ */
+    #gate-overlay {
+      position: fixed; inset: 0; z-index: 10000;
+      background: var(--obsidian);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity 1s ease;
+    }
+    .gate-btn {
+      padding: 16px 32px; border: 2px solid var(--gold); border-radius: 4px;
+      background: rgba(201, 162, 39, 0.1); color: var(--gold-bright);
+      font-family: 'Cinzel', serif; font-size: 1.2rem; cursor: pointer;
+      box-shadow: 0 0 20px rgba(201, 162, 39, 0.4);
+      transition: all 0.3s ease;
+    }
+    .gate-btn:hover { background: rgba(201, 162, 39, 0.3); box-shadow: 0 0 40px rgba(201, 162, 39, 0.6); transform: scale(1.05); }
+
+    /* ════ BACKGROUND & GLASS PANEL ════ */
+    #star-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+    .bg-hex-grid { position: fixed; inset: 0; background-image: radial-gradient(ellipse 80% 50% at 20% 10%, rgba(58, 143, 255, 0.07) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 80% 80%, rgba(201, 162, 39, 0.06) 0%, transparent 60%); pointer-events: none; z-index: 0; }
+    
+    .glass-panel {
+      background: rgba(10, 15, 28, 0.8); backdrop-filter: blur(16px) saturate(180%);
+      border: 1px solid rgba(201, 162, 39, 0.2);
+      box-shadow: 0 4px 32px rgba(0, 0, 0, 0.6), inset 0 0 60px rgba(58, 143, 255, 0.03);
+      position: relative; overflow: hidden;
+    }
+
+    /* ════ HEADER & STATS ════ */
+    .system-badge { font-family: 'Cinzel', serif; letter-spacing: 0.3em; font-size: 0.6rem; color: var(--gold-light); text-shadow: 0 0 12px var(--gold); border: 1px solid rgba(201, 162, 39, 0.3); padding: 2px 12px; display: inline-block; position: relative; }
+    .player-name { font-family: 'Cinzel Decorative', serif; font-size: 1.4rem; color: var(--gold-bright); text-shadow: 0 0 10px var(--gold); }
+    .rank-badge { background: linear-gradient(135deg, #1a0a2e, #2d1a4a); border: 1px solid rgba(168, 85, 247, 0.5); font-family: 'Cinzel', serif; font-size: 0.65rem; color: #d8b4fe; padding: 3px 10px; border-radius: 2px; }
+    .level-orb { width: 56px; height: 56px; border-radius: 50%; border: 2px solid var(--gold); box-shadow: 0 0 12px var(--gold); display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle at 35% 35%, rgba(240, 192, 64, 0.3), rgba(10, 15, 28, 0.9)); }
+    .level-number { font-family: 'Cinzel', serif; font-size: 1.4rem; font-weight: 900; color: var(--gold-bright); }
+    .level-label { font-size: 0.45rem; color: rgba(201, 162, 39, 0.7); font-family: 'Cinzel', serif; }
+    
+    /* ════ EXP BAR ════ */
+    .exp-bar-container { height: 18px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(201, 162, 39, 0.25); border-radius: 2px; position: relative; overflow: hidden; }
+    .exp-bar-fill { height: 100%; background: linear-gradient(90deg, #b8860b, #daa520, #f0c040, #ffe066, #f0c040, #daa520, #c9a227); background-size: 200% 100%; animation: liquidGold 2s linear infinite; transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+    @keyframes liquidGold { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+
+    /* ════ ATTRIBUTE CARDS ════ */
+    .attr-card { position: relative; background: rgba(10, 15, 28, 0.9); border-radius: 4px; padding: 14px 12px; transition: transform 0.3s ease; }
+    .attr-str { border: 1px solid rgba(239, 68, 68, 0.4); box-shadow: 0 0 20px rgba(239, 68, 68, 0.15); }
+    .attr-str .attr-value { color: #fca5a5; text-shadow: 0 0 12px #ef4444; }
+    .attr-agi { border: 1px solid rgba(34, 197, 94, 0.4); box-shadow: 0 0 20px rgba(34, 197, 94, 0.15); }
+    .attr-agi .attr-value { color: #86efac; text-shadow: 0 0 12px #22c55e; }
+    .attr-end { border: 1px solid rgba(59, 130, 246, 0.4); box-shadow: 0 0 20px rgba(59, 130, 246, 0.15); }
+    .attr-end .attr-value { color: #93c5fd; text-shadow: 0 0 12px #3b82f6; }
+    .attr-vit { border: 1px solid rgba(168, 85, 247, 0.4); box-shadow: 0 0 20px rgba(168, 85, 247, 0.15); }
+    .attr-vit .attr-value { color: #d8b4fe; text-shadow: 0 0 12px #a855f7; }
+    .attr-name { font-family: 'Cinzel', serif; font-size: 0.6rem; color: rgba(226, 232, 240, 0.5); }
+    .attr-value { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 700; line-height: 1; }
+
+    /* ════ QUEST CARDS ════ */
+    .quest-section-title { font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.3em; color: var(--gold); display: flex; align-items: center; gap: 10px; }
+    .quest-card { position: relative; background: rgba(8, 12, 24, 0.85); border-radius: 4px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: all 0.4s ease; overflow: hidden; user-select: none; }
+    .quest-water { border: 1px solid rgba(58, 143, 255, 0.25); } .quest-water .quest-seal { color: var(--water); }
+    .quest-fire { border: 1px solid rgba(255, 106, 26, 0.25); } .quest-fire .quest-seal { color: var(--fire); }
+    .quest-lightning { border: 1px solid rgba(168, 85, 247, 0.25); } .quest-lightning .quest-seal { color: var(--lightning); }
+    .quest-earth { border: 1px solid rgba(181, 137, 42, 0.25); } .quest-earth .quest-seal { color: var(--earth); }
+    .quest-wind { border: 1px solid rgba(74, 222, 128, 0.25); } .quest-wind .quest-seal { color: var(--wind); }
+    
+    .quest-card.checked { opacity: 0.5; }
+    .quest-seal { width: 40px; height: 40px; border: 1px solid; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transform: rotate(45deg); }
+    .quest-seal-inner { transform: rotate(-45deg); }
+    .quest-info { flex: 1; }
+    .quest-name { font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 600; color: rgba(226, 232, 240, 0.9); }
+    .quest-card.checked .quest-name { text-decoration: line-through; }
+    .quest-exp { font-family: 'Cinzel', serif; font-size: 0.7rem; color: var(--gold); }
+    
+    /* ════ MANDALA ENERGY CORE (NEW) ════ */
+    .mandala-container { position: relative; width: 140px; height: 140px; display: flex; justify-content: center; align-items: center; cursor: pointer; margin: 20px auto; }
+    .mandala-ring { position: absolute; border-radius: 50%; box-shadow: 0 0 15px rgba(212, 175, 55, 0.5), inset 0 0 15px rgba(212, 175, 55, 0.5); pointer-events: none; }
+    .outer-ring { width: 100%; height: 100%; border: 3px dashed #d4af37; animation: spinRight 15s linear infinite; }
+    .inner-ring { width: 70%; height: 70%; border: 2px dotted #00ffff; animation: spinLeft 10s linear infinite; }
+    .energy-text { position: relative; z-index: 2; font-family: 'Cinzel', serif; font-weight: bold; color: #fff; text-shadow: 0 0 8px #d4af37; font-size: 0.8rem; text-align: center; letter-spacing: 0.1em; pointer-events: none; }
+    
+    /* Tombol Mati (Jika sudah klaim) */
+    .mandala-container.disabled .outer-ring { border-color: #555; animation: none; box-shadow: none; }
+    .mandala-container.disabled .inner-ring { border-color: #444; animation: none; box-shadow: none; }
+    .mandala-container.disabled .energy-text { color: #777; text-shadow: none; }
+
+    @keyframes spinRight { 100% { transform: rotate(360deg); } }
+    @keyframes spinLeft { 100% { transform: rotate(-360deg); } }
+    
+    .mandala-container:active:not(.disabled) .outer-ring { box-shadow: 0 0 30px #00ffff, inset 0 0 30px #00ffff; }
+
+    /* ════ PARTICLE EMOJI SYSTEM ════ */
+    .particle-emoji { position: fixed; pointer-events: none; z-index: 9997; font-size: 20px; animation: particleBurst 1s ease-out forwards; }
+    @keyframes particleBurst {
+      0% { transform: translate(0, 0) scale(0.5); opacity: 1; }
+      100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--rot)); opacity: 0; }
+    }
+
+    /* ════ PANEL BLESSING (NEW) ════ */
+    .blessing-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 9998; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+    .blessing-overlay.show { opacity: 1; pointer-events: all; }
+    .blessing-panel { background: radial-gradient(circle at center, rgba(30, 20, 50, 0.9), #080c12); border: 2px solid var(--gold); border-radius: 8px; padding: 30px; text-align: center; width: 90%; max-width: 350px; box-shadow: 0 0 40px rgba(201, 162, 39, 0.5); transform: scale(0.8); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .blessing-overlay.show .blessing-panel { transform: scale(1); }
+    .blessing-title { font-family: 'Cinzel Decorative', serif; font-size: 1.5rem; color: var(--gold-bright); margin-bottom: 15px; text-shadow: 0 0 10px var(--gold); }
+    .blessing-list { list-style: none; padding: 0; margin-bottom: 20px; font-family: 'Exo 2', sans-serif; font-size: 1.1rem; color: #fff; }
+    .blessing-list li { margin: 8px 0; border-bottom: 1px dashed rgba(201, 162, 39, 0.3); padding-bottom: 5px; display: flex; justify-content: space-between; }
+    .blessing-list li span { color: #4ade80; font-weight: bold; }
+    .btn-close-blessing { padding: 10px 20px; background: transparent; border: 1px solid var(--gold); color: var(--gold); font-family: 'Cinzel', serif; cursor: pointer; transition: 0.3s; width: 100%; }
+    .btn-close-blessing:hover { background: var(--gold); color: #000; }
+
+    /* Utilities */
+    .system-init { animation: systemInit 1s cubic-bezier(0.4, 0, 0.2, 1) both; }
+    @keyframes systemInit { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+
+<body>
+  <div id="gate-overlay">
+    <button class="gate-btn" onclick="openGate()">BUKA GERBANG ARKANA</button>
+  </div>
+
+  <audio id="sfx-startup" src="_Yokoso_ Otoko no sekai_ sound effect (True man_s world)(MP3_160K).mp3" preload="auto"></audio>
+  <audio id="sfx-water" src="Water Drop with original Sound(MP3_160K).mp3" preload="auto"></audio>
+  <audio id="sfx-fire" src="suara api no copyright  __ Fire sound effect (no copyright) _firesounds _firesoundseffect(MP3_160K).mp3" preload="auto"></audio>
+  <audio id="sfx-lightning" src="Lightning sound ⚡_thunder and lightning sound effects(MP3_160K).mp3" preload="auto"></audio>
+  <audio id="sfx-earth" src="Tanah retak(MP3_160K).mp3" preload="auto"></audio>
+  <audio id="sfx-wind" src="Wind howl sound effect (HD) The sound of howling wind(MP3_160K).mp3" preload="auto"></audio>
+<audio id="sfx-claim" src="https://actions.google.com/sounds/v1/weapons/retro_magic_spell.ogg" crossorigin="anonymous" preload="auto"></audio>
+
+
+  <canvas id="star-canvas"></canvas>
+  <div class="bg-hex-grid"></div>
+
+  <div class="blessing-overlay" id="blessing-overlay">
+    <div class="blessing-panel">
+      <div class="blessing-title" id="blessing-title">BLESSING ACQUIRED</div>
+      <ul class="blessing-list" id="blessing-list">
+        </ul>
+      <button class="btn-close-blessing" onclick="closeBlessing()">LANJUTKAN PERJALANAN</button>
+    </div>
+  </div>
+
+  <div class="relative z-10 max-w-md mx-auto px-3 pb-6 pt-4">
+
+    <div class="glass-panel rounded-lg p-4 mb-3 system-init">
+      <div class="text-center mb-3">
+        <span class="system-badge">✦ ARKANA PANCABHUTA ✦</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="level-orb flex-shrink-0">
+          <div class="level-number" id="level-display">1</div>
+          <div class="level-label">LVL</div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="player-name truncate">[ Dimas Zakariyah ]</div>
+          <div class="flex items-center gap-2 mt-1">
+            <span class="rank-badge">◆ INITIATE</span>
+            <span class="text-xs" style="color: rgba(201,162,39,0.5);">⚔ <span id="quests-done">0</span> quests</span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-3">
+        <div class="flex justify-between items-center mb-1">
+          <span style="font-size: 0.5rem; color: rgba(201,162,39,0.6);">EXPERIENCE</span>
+          <span style="font-size: 0.6rem; color: rgba(201,162,39,0.8);" id="exp-text">0 / 5,000 XP</span>
+        </div>
+        <div class="exp-bar-container">
+          <div class="exp-bar-fill" id="exp-bar" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass-panel rounded-lg p-3 mb-3 system-init">
+      <div class="quest-section-title mb-3">PUSTAKA RUNE STATUS</div>
+      <div class="grid grid-cols-2 gap-2">
+        <div class="attr-card attr-str"><div class="attr-name">STR</div><div class="attr-value" id="attr-str">000</div></div>
+        <div class="attr-card attr-agi"><div class="attr-name">AGI</div><div class="attr-value" id="attr-agi">000</div></div>
+        <div class="attr-card attr-end"><div class="attr-name">END</div><div class="attr-value" id="attr-end">000</div></div>
+        <div class="attr-card attr-vit"><div class="attr-name">VIT</div><div class="attr-value" id="attr-vit">000</div></div>
+      </div>
+    </div>
+
+    <div class="glass-panel rounded-lg p-3 mb-3 system-init" id="quest-panel">
+      <div class="quest-section-title mb-3">QUEST HARIAN</div>
+      <div id="quest-list"></div>
+    </div>
+
+    <div class="glass-panel rounded-lg mb-3 system-init" style="padding: 12px;">
+      <div class="quest-section-title mb-1">INTI ENERGI</div>
+      
+      <div class="mandala-container" id="claim-btn" onclick="claimEnergy(event)">
+        <div class="mandala-ring outer-ring"></div>
+        <div class="mandala-ring inner-ring"></div>
+        <div class="energy-text" id="claim-text">KLAIM<br>ENERGI</div>
+      </div>
+      
+      <div class="text-center" style="font-size: 0.6rem; color: rgba(201,162,39,0.6);">
+        +<span id="pending-exp">0</span> EXP PENDING
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+  // ════ STATE & LOCAL STORAGE ════
+  const STATE = {
+    level: 1, exp: 0, expToNext: 5000, questsDone: 0,
+    attrs: { str: 0, agi: 0, end: 0, vit: 0 },
+    lastClaimDate: "", 
+    checkedQuests: [] 
+  };
+
+  const EXP_PER_QUEST = 150;
+
+  // ════ DATA QUEST (DENGAN AUDIO & PARTIKEL) ════
+  const QUESTS = [
+    { id: 0, name: 'Push-up / Knee Push-up', element: 'AIR', elementClass: 'quest-water', icon: '💧', color: '#3a8fff', sfx: 'sfx-water', detail: '3 × 15 reps' },
+    { id: 1, name: 'Plank Hold', element: 'API', elementClass: 'quest-fire', icon: '🔥', color: '#ff6a1a', sfx: 'sfx-fire', detail: '3 × 45 sec' },
+    { id: 2, name: 'Wall Sit', element: 'PETIR', elementClass: 'quest-lightning', icon: '⚡', color: '#a855f7', sfx: 'sfx-lightning', detail: '3 × 60 sec' },
+    { id: 3, name: 'Sit Up', element: 'TANAH', elementClass: 'quest-earth', icon: '🪨', color: '#b5892a', sfx: 'sfx-earth', detail: '3 × 20 reps' },
+    { id: 4, name: 'Squat Jump', element: 'ANGIN', elementClass: 'quest-wind', icon: '🌪', color: '#4ade80', sfx: 'sfx-wind', detail: '3 × 12 reps' },
+  ];
+
+  // ════ INISIALISASI APLIKASI ════
+  function init() {
+    loadData();
+    renderQuests();
+    updateUI();
+    checkDailyLimit();
+  }
+
+  // ════ GERBANG MASUK (Untuk Izin Audio) ════
+  function openGate() {
+    document.getElementById('gate-overlay').style.opacity = '0';
+    setTimeout(() => { document.getElementById('gate-overlay').style.display = 'none'; }, 1000);
+    const audio = document.getElementById('sfx-startup');
+    audio.volume = 0.8;
+    audio.play().catch(e => console.log("Audio block:", e));
+  }
+
+  // ════ RENDER QUESTS ════
+  function renderQuests() {
+    const list = document.getElementById('quest-list');
+    list.innerHTML = '';
+    QUESTS.forEach(q => {
+      const isChecked = STATE.checkedQuests.includes(q.id);
+      const card = document.createElement('div');
+      card.className = `quest-card ${q.elementClass} mb-2 ${isChecked ? 'checked' : ''}`;
+      card.dataset.id = q.id;
+      
+      card.innerHTML = `
+        <div class="quest-seal" style="color:${q.color}"><div class="quest-seal-inner">${q.icon}</div></div>
+        <div class="quest-info">
+          <div class="quest-name">${q.name}</div>
+          <div style="font-size:0.55rem; color:${q.color}; font-family:'Cinzel', serif;">◈ ${q.element} · ${q.detail}</div>
+        </div>
+        <div class="quest-exp">+${EXP_PER_QUEST} EXP</div>
+      `;
+      card.addEventListener('click', (e) => toggleQuest(q, card, e));
+      list.appendChild(card);
+    });
+  }
+
+  // ════ LOGIKA KLIK QUEST & EFEK ELEMEN ════
+  function toggleQuest(quest, cardElement, event) {
+    if (STATE.lastClaimDate === new Date().toDateString()) return; // Jika sudah klaim, quest terkunci
+
+    const index = STATE.checkedQuests.indexOf(quest.id);
+    if (index > -1) {
+      STATE.checkedQuests.splice(index, 1);
+      cardElement.classList.remove('checked');
+    } else {
+      STATE.checkedQuests.push(quest.id);
+      cardElement.classList.add('checked');
+      
+      // Putar Audio Spesifik Elemen
+      const sfx = document.getElementById(quest.sfx);
+      sfx.currentTime = 0; sfx.play();
+
+      // Ledakan Partikel Emoji Elemen
+      spawnEmojiParticles(event, quest.icon);
+    }
+    document.getElementById('pending-exp').textContent = STATE.checkedQuests.length * EXP_PER_QUEST;
+  }
+
+  // ════ EFEK PARTIKEL EMOJI ELEMEN ════
+  function spawnEmojiParticles(event, emoji) {
+    const count = 8; 
+    const x = event.clientX || window.innerWidth / 2;
+    const y = event.clientY || window.innerHeight / 2;
+
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle-emoji';
+      p.textContent = emoji;
+      
+      const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5);
+      const distance = 50 + Math.random() * 50;
+      
+      p.style.cssText = `
+        left: ${x - 10}px; top: ${y - 10}px;
+        --tx: ${Math.cos(angle) * distance}px;
+        --ty: ${Math.sin(angle) * distance}px;
+        --rot: ${Math.random() * 360}deg;
+      `;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 1000);
+    }
+  }
+
+  // ════ KLAIM ENERGI & PANEL BLESSING ════
+  function claimEnergy(event) {
+    const today = new Date().toDateString();
+    if (STATE.lastClaimDate === today) return; // Mencegah klaim ganda di hari yang sama
+    if (STATE.checkedQuests.length === 0) return alert("Selesaikan minimal 1 Quest!");
+
+    // Audio Klaim
+    const claimAudio = document.getElementById('sfx-claim');
+    claimAudio.currentTime = 0; claimAudio.play();
+
+    // Kalkulasi Status
+    const expGain = STATE.checkedQuests.length * EXP_PER_QUEST;
+    let strGain = 0, agiGain = 0, endGain = 0, vitGain = 0;
+    
+    STATE.checkedQuests.forEach(id => {
+      if(id === 0) { strGain+=2; endGain+=1; }
+      if(id === 1) { endGain+=2; vitGain+=1; }
+      if(id === 2) { agiGain+=2; strGain+=1; }
+      if(id === 3) { vitGain+=2; endGain+=1; }
+      if(id === 4) { agiGain+=3; }
+    });
+
+    // Simpan ke State
+    STATE.exp += expGain;
+    STATE.attrs.str += strGain; STATE.attrs.agi += agiGain;
+    STATE.attrs.end += endGain; STATE.attrs.vit += vitGain;
+    STATE.questsDone += STATE.checkedQuests.length;
+
+    // Cek Level Up
+    let isLevelUp = false;
+    if (STATE.exp >= STATE.expToNext) {
+      STATE.level++;
+      STATE.exp -= STATE.expToNext;
+      STATE.expToNext = Math.floor(STATE.expToNext * 1.2);
+      isLevelUp = true;
+    }
+
+    // Set Hari Ini Sudah Klaim
+    STATE.lastClaimDate = today;
+    saveData();
+    updateUI();
+    checkDailyLimit();
+
+    // Tampilkan Panel Blessing
+    tampilkanBlessing(expGain, strGain, agiGain, endGain, vitGain, isLevelUp);
+  }
+
+  function tampilkanBlessing(exp, str, agi, end, vit, isLevelUp) {
+    const list = document.getElementById('blessing-list');
+    document.getElementById('blessing-title').textContent = isLevelUp ? "LEVEL UP! BLESSING" : "BLESSING ACQUIRED";
+    document.getElementById('blessing-title').style.color = isLevelUp ? "#00ffff" : "#ffe066";
+    
+    list.innerHTML = `<li>Experience <span>+${exp} XP</span></li>`;
+    if(str > 0) list.innerHTML += `<li>Strength (STR) <span>+${str}</span></li>`;
+    if(agi > 0) list.innerHTML += `<li>Agility (AGI) <span>+${agi}</span></li>`;
+    if(end > 0) list.innerHTML += `<li>Endurance (END) <span>+${end}</span></li>`;
+    if(vit > 0) list.innerHTML += `<li>Vitality (VIT) <span>+${vit}</span></li>`;
+    
+    document.getElementById('blessing-overlay').classList.add('show');
+  }
+
+  function closeBlessing() {
+    document.getElementById('blessing-overlay').classList.remove('show');
+  }
+
+  // ════ SISTEM BATAS HARIAN ════
+  function checkDailyLimit() {
+    const btn = document.getElementById('claim-btn');
+    const text = document.getElementById('claim-text');
+    const today = new Date().toDateString();
+
+    if (STATE.lastClaimDate === today) {
+      btn.classList.add('disabled');
+      text.innerHTML = "SELESAI<br>HARI INI";
+      document.getElementById('pending-exp').textContent = 0;
+      // Visually check all completed quests
+      document.querySelectorAll('.quest-card').forEach(card => {
+        if(STATE.checkedQuests.includes(parseInt(card.dataset.id))) card.classList.add('checked');
+      });
+    } else {
+      STATE.checkedQuests = []; // Reset jika hari baru
+      btn.classList.remove('disabled');
+      text.innerHTML = "KLAIM<br>ENERGI";
+    }
+  }
+
+  // ════ UPDATE UI & STORAGE ════
+  function updateUI() {
+    document.getElementById('level-display').textContent = STATE.level;
+    document.getElementById('quests-done').textContent = STATE.questsDone;
+    document.getElementById('exp-text').textContent = `${STATE.exp.toLocaleString()} / ${STATE.expToNext.toLocaleString()} XP`;
+    document.getElementById('exp-bar').style.width = `${Math.min((STATE.exp / STATE.expToNext) * 100, 100)}%`;
+    
+    document.getElementById('attr-str').textContent = String(STATE.attrs.str).padStart(3, '0');
+    document.getElementById('attr-agi').textContent = String(STATE.attrs.agi).padStart(3, '0');
+    document.getElementById('attr-end').textContent = String(STATE.attrs.end).padStart(3, '0');
+    document.getElementById('attr-vit').textContent = String(STATE.attrs.vit).padStart(3, '0');
+  }
+
+  function saveData() { localStorage.setItem('arkanaData', JSON.stringify(STATE)); }
+  function loadData() {
+    const saved = localStorage.getItem('arkanaData');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      Object.assign(STATE, parsed);
+    }
+  }
+
+  // Bintang Latar Belakang
+  (function initStars() {
+    const canvas = document.getElementById('star-canvas');
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
+    function draw() {
+      ctx.clearRect(0,0, canvas.width, canvas.height);
+      ctx.fillStyle = "rgba(255,255,255,0.8)";
+      for(let i=0; i<50; i++) {
+        ctx.beginPath();
+        ctx.arc(Math.random()*canvas.width, Math.random()*canvas.height, Math.random()*1.5, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+    setInterval(draw, 1000);
+  })();
+
+  // Jalankan Sistem
+  init();
+  </script>
+</body>
+</html>
