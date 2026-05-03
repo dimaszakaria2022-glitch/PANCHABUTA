@@ -132,7 +132,7 @@
     .quest-card.checked .quest-name { text-decoration: line-through; }
     .quest-exp { font-family: 'Cinzel', serif; font-size: 0.7rem; color: var(--gold); }
     
-    /* ════ MANDALA ENERGY CORE (NEW) ════ */
+    /* ════ MANDALA ENERGY CORE ════ */
     .mandala-container { position: relative; width: 140px; height: 140px; display: flex; justify-content: center; align-items: center; cursor: pointer; margin: 20px auto; }
     .mandala-ring { position: absolute; border-radius: 50%; box-shadow: 0 0 15px rgba(212, 175, 55, 0.5), inset 0 0 15px rgba(212, 175, 55, 0.5); pointer-events: none; }
     .outer-ring { width: 100%; height: 100%; border: 3px dashed #d4af37; animation: spinRight 15s linear infinite; }
@@ -156,7 +156,7 @@
       100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--rot)); opacity: 0; }
     }
 
-    /* ════ PANEL BLESSING (NEW) ════ */
+    /* ════ PANEL BLESSING ════ */
     .blessing-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 9998; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
     .blessing-overlay.show { opacity: 1; pointer-events: all; }
     .blessing-panel { background: radial-gradient(circle at center, rgba(30, 20, 50, 0.9), #080c12); border: 2px solid var(--gold); border-radius: 8px; padding: 30px; text-align: center; width: 90%; max-width: 350px; box-shadow: 0 0 40px rgba(201, 162, 39, 0.5); transform: scale(0.8); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
@@ -167,6 +167,15 @@
     .blessing-list li span { color: #4ade80; font-weight: bold; }
     .btn-close-blessing { padding: 10px 20px; background: transparent; border: 1px solid var(--gold); color: var(--gold); font-family: 'Cinzel', serif; cursor: pointer; transition: 0.3s; width: 100%; }
     .btn-close-blessing:hover { background: var(--gold); color: #000; }
+
+    /* ════ TRACKING UI ════ */
+    .history-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 10px; }
+    .history-day { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .history-icon { width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgba(201, 162, 39, 0.2); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; background: rgba(0,0,0,0.3); transition: all 0.3s ease; }
+    .history-icon.success { border-color: #4ade80; color: #4ade80; box-shadow: 0 0 10px rgba(74, 222, 128, 0.3); }
+    .history-icon.failed { border-color: #ef4444; color: #ef4444; }
+    .history-icon.rest { border-color: #3b82f6; color: #3b82f6; opacity: 0.6; }
+    .history-label { font-size: 0.5rem; font-family: 'Cinzel', serif; color: rgba(201, 162, 39, 0.5); }
 
     /* Utilities */
     .system-init { animation: systemInit 1s cubic-bezier(0.4, 0, 0.2, 1) both; }
@@ -187,7 +196,6 @@
   <audio id="sfx-wind" src="Wind howl sound effect (HD) The sound of howling wind(MP3_160K).mp3" preload="auto"></audio>
   <audio id="sfx-claim" src="https://actions.google.com/sounds/v1/weapons/retro_magic_spell.ogg" crossorigin="anonymous" preload="auto"></audio>
 
-
   <canvas id="star-canvas"></canvas>
   <div class="bg-hex-grid"></div>
 
@@ -195,7 +203,7 @@
     <div class="blessing-panel">
       <div class="blessing-title" id="blessing-title">BLESSING ACQUIRED</div>
       <ul class="blessing-list" id="blessing-list">
-        </ul>
+      </ul>
       <button class="btn-close-blessing" onclick="closeBlessing()">LANJUTKAN PERJALANAN</button>
     </div>
   </div>
@@ -228,6 +236,12 @@
           <div class="exp-bar-fill" id="exp-bar" style="width: 0%;"></div>
         </div>
       </div>
+    </div>
+
+    <div class="glass-panel rounded-lg p-3 mb-3 system-init">
+      <div class="quest-section-title mb-1" style="font-size: 0.5rem;">JEJAK LANGKAH ARKANA</div>
+      <div class="history-grid" id="history-grid">
+        </div>
     </div>
 
     <div class="glass-panel rounded-lg p-3 mb-3 system-init">
@@ -267,12 +281,17 @@
     level: 1, exp: 0, expToNext: 5000, questsDone: 0,
     attrs: { str: 0, agi: 0, end: 0, vit: 0 },
     lastClaimDate: "", 
-    checkedQuests: [] 
+    checkedQuests: [],
+    history: {} 
   };
 
   const EXP_PER_QUEST = 150;
+  
+  // Konfigurasi Hari Latihan: 0=Minggu, 2=Selasa, 4=Kamis, 5=Jumat
+  const WORKOUT_DAYS = [0, 2, 4, 5]; 
+  const DAY_NAMES = ['MIN', 'SEN', 'SEL', 'RAB', 'KAM', 'JUM', 'SAB'];
 
-  // ════ DATA QUEST (DENGAN AUDIO & PARTIKEL) ════
+  // ════ DATA QUEST ════
   const QUESTS = [
     { id: 0, name: 'Push-up / Knee Push-up', element: 'AIR', elementClass: 'quest-water', icon: '💧', color: '#3a8fff', sfx: 'sfx-water', detail: '3 × 15 reps' },
     { id: 1, name: 'Plank Hold', element: 'API', elementClass: 'quest-fire', icon: '🔥', color: '#ff6a1a', sfx: 'sfx-fire', detail: '3 × 45 sec' },
@@ -281,21 +300,65 @@
     { id: 4, name: 'Squat Jump', element: 'ANGIN', elementClass: 'quest-wind', icon: '🌪', color: '#4ade80', sfx: 'sfx-wind', detail: '3 × 12 reps' },
   ];
 
+  function getDateStr(dateObj) {
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   // ════ INISIALISASI APLIKASI ════
   function init() {
     loadData();
+    generateHistory(); 
     renderQuests();
     updateUI();
     checkDailyLimit();
   }
 
-  // ════ GERBANG MASUK (Untuk Izin Audio) ════
+  // ════ GERBANG MASUK ════
   function openGate() {
     document.getElementById('gate-overlay').style.opacity = '0';
     setTimeout(() => { document.getElementById('gate-overlay').style.display = 'none'; }, 1000);
     const audio = document.getElementById('sfx-startup');
     audio.volume = 0.8;
     audio.play().catch(e => console.log("Audio block:", e));
+  }
+
+  // ════ GENERATE HISTORY UI ════
+  function generateHistory() {
+    const grid = document.getElementById('history-grid');
+    grid.innerHTML = '';
+    const today = new Date();
+    const todayStr = getDateStr(today);
+
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(today.getDate() - i);
+      const dateStr = getDateStr(d);
+      const dayIdx = d.getDay();
+      const isWorkoutDay = WORKOUT_DAYS.includes(dayIdx);
+
+      let status = STATE.history[dateStr];
+      
+      if (!status) {
+        if (dateStr === todayStr) {
+          status = ""; 
+        } else {
+          status = isWorkoutDay ? "failed" : "rest";
+        }
+      }
+
+      const iconMap = { "success": "✅", "failed": "❌", "rest": "💤", "": "⏳" };
+      
+      const dayDiv = document.createElement('div');
+      dayDiv.className = 'history-day';
+      dayDiv.innerHTML = `
+        <div class="history-icon ${status}">${iconMap[status] || "⏳"}</div>
+        <div class="history-label">${DAY_NAMES[dayIdx]}</div>
+      `;
+      grid.appendChild(dayDiv);
+    }
   }
 
   // ════ RENDER QUESTS ════
@@ -321,9 +384,9 @@
     });
   }
 
-  // ════ LOGIKA KLIK QUEST & EFEK ELEMEN ════
+  // ════ LOGIKA KLIK QUEST ════
   function toggleQuest(quest, cardElement, event) {
-    if (STATE.lastClaimDate === new Date().toDateString()) return; // Jika sudah klaim, quest terkunci
+    if (STATE.lastClaimDate === new Date().toDateString()) return;
 
     const index = STATE.checkedQuests.indexOf(quest.id);
     if (index > -1) {
@@ -333,17 +396,15 @@
       STATE.checkedQuests.push(quest.id);
       cardElement.classList.add('checked');
       
-      // Putar Audio Spesifik Elemen
       const sfx = document.getElementById(quest.sfx);
       sfx.currentTime = 0; sfx.play();
 
-      // Ledakan Partikel Emoji Elemen
       spawnEmojiParticles(event, quest.icon);
     }
     document.getElementById('pending-exp').textContent = STATE.checkedQuests.length * EXP_PER_QUEST;
   }
 
-  // ════ EFEK PARTIKEL EMOJI ELEMEN ════
+  // ════ PARTIKEL EMOJI ════
   function spawnEmojiParticles(event, emoji) {
     const count = 8; 
     const x = event.clientX || window.innerWidth / 2;
@@ -368,17 +429,17 @@
     }
   }
 
-  // ════ KLAIM ENERGI & PANEL BLESSING ════
+  // ════ KLAIM ENERGI & SYSTEM TTS ════
   function claimEnergy(event) {
-    const today = new Date().toDateString();
-    if (STATE.lastClaimDate === today) return; // Mencegah klaim ganda di hari yang sama
+    const today = new Date();
+    const todayStr = today.toDateString();
+    
+    if (STATE.lastClaimDate === todayStr) return;
     if (STATE.checkedQuests.length === 0) return alert("Selesaikan minimal 1 Quest!");
 
-    // Audio Klaim
     const claimAudio = document.getElementById('sfx-claim');
     claimAudio.currentTime = 0; claimAudio.play();
 
-    // Kalkulasi Status
     const expGain = STATE.checkedQuests.length * EXP_PER_QUEST;
     let strGain = 0, agiGain = 0, endGain = 0, vitGain = 0;
     
@@ -390,13 +451,11 @@
       if(id === 4) { agiGain+=3; }
     });
 
-    // Simpan ke State
     STATE.exp += expGain;
     STATE.attrs.str += strGain; STATE.attrs.agi += agiGain;
     STATE.attrs.end += endGain; STATE.attrs.vit += vitGain;
     STATE.questsDone += STATE.checkedQuests.length;
 
-    // Cek Level Up
     let isLevelUp = false;
     if (STATE.exp >= STATE.expToNext) {
       STATE.level++;
@@ -405,16 +464,52 @@
       isLevelUp = true;
     }
 
-    // Set Hari Ini Sudah Klaim
-    STATE.lastClaimDate = today;
+    STATE.lastClaimDate = todayStr;
+    STATE.history[getDateStr(today)] = "success"; 
+    
     saveData();
     updateUI();
     checkDailyLimit();
+    generateHistory(); 
 
-    // Tampilkan Panel Blessing
+    // ════ TEXT-TO-SPEECH (TTS) SYSTEM ANNNOUNCER ════
+    if ('speechSynthesis' in window) {
+      let ttsText = "YOU GAINED XP AND INCREASE STAT UP";
+      if (isLevelUp) {
+        ttsText += ". YOU LEVEL UP.";
+      }
+      
+      const utterance = new SpeechSynthesisUtterance(ttsText);
+      utterance.lang = 'en-US'; 
+      utterance.pitch = 0.8; // Sedikit direndahkan agar lebih maskulin/berat
+      utterance.rate = 0.95; // Kecepatan sedikit melambat agar terasa epik
+      
+      const playMaleTTS = () => {
+        const voices = window.speechSynthesis.getVoices();
+        // Mencari suara laki-laki (Male/David/James dll) berbahasa Inggris
+        const maleVoice = voices.find(v => 
+          v.lang.startsWith('en') && 
+          (v.name.toLowerCase().includes('male') || 
+           v.name.toLowerCase().includes('david') || 
+           v.name.toLowerCase().includes('james') ||
+           v.name.toLowerCase().includes('mark'))
+        ) || voices.find(v => v.lang.startsWith('en-US') || v.lang.startsWith('en-GB')); // Fallback jika tidak ada label 'Male'
+        
+        if (maleVoice) utterance.voice = maleVoice;
+        window.speechSynthesis.speak(utterance);
+      };
+
+      if (window.speechSynthesis.getVoices().length === 0) {
+        window.speechSynthesis.onvoiceschanged = playMaleTTS;
+      } else {
+        playMaleTTS();
+      }
+    }
+
     tampilkanBlessing(expGain, strGain, agiGain, endGain, vitGain, isLevelUp);
   }
 
+  // ════ PANEL BLESSING ════
   function tampilkanBlessing(exp, str, agi, end, vit, isLevelUp) {
     const list = document.getElementById('blessing-list');
     document.getElementById('blessing-title').textContent = isLevelUp ? "LEVEL UP! BLESSING" : "BLESSING ACQUIRED";
@@ -443,12 +538,11 @@
       btn.classList.add('disabled');
       text.innerHTML = "SELESAI<br>HARI INI";
       document.getElementById('pending-exp').textContent = 0;
-      // Visually check all completed quests
       document.querySelectorAll('.quest-card').forEach(card => {
         if(STATE.checkedQuests.includes(parseInt(card.dataset.id))) card.classList.add('checked');
       });
     } else {
-      STATE.checkedQuests = []; // Reset jika hari baru
+      STATE.checkedQuests = [];
       btn.classList.remove('disabled');
       text.innerHTML = "KLAIM<br>ENERGI";
     }
@@ -472,6 +566,7 @@
     const saved = localStorage.getItem('arkanaData');
     if (saved) {
       const parsed = JSON.parse(saved);
+      if (!parsed.history) parsed.history = {};
       Object.assign(STATE, parsed);
     }
   }
