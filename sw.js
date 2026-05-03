@@ -12,11 +12,12 @@ const PRECACHE_ASSETS = [
   './index.html',
   './manifest.json',
   './Welcome.mp3',
-  './Water Drop with original Sound(MP3_160K).mp3',
-  './suara api no copyright  __ Fire sound effect (no copyright) _firesounds _firesoundseffect(MP3_160K).mp3',
-  './Lightning sound ⚡_thunder and lightning sound effects(MP3_160K).mp3',
+  './water.mp3',
+  './fire.mp3',
+  './thun.mp3',
   './Tanah retak(MP3_160K).mp3',
-  './Wind howl sound effect (HD) The sound of howling wind(MP3_160K).mp3'
+  './wind.mp3', 
+  './Evil.mp3'
 ];
 
 // External CDN assets
